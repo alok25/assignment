@@ -32,3 +32,15 @@ class UserSerializer(BaseSerializer):
         user.save()
 
         return user
+
+
+class UserDisplaySerializer(BaseSerializer):
+    """
+    Serializer for registering new users.
+    This class excepts users details validates them
+    and returns user object.
+    """
+    class Meta:
+        model = User
+        exclude = ('password','is_superuser','is_staff',
+                   'date_joined')

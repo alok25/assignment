@@ -11,7 +11,8 @@ from user_auth import system_error
 from user_auth import utils
 from user_auth.models import User
 from user_auth.serializers import (
-    UserSerializer
+    UserSerializer,
+    UserDisplaySerializer
 )
 
 
@@ -92,6 +93,8 @@ class LoginView(APIView):
             email = data.get('email')
             password = data.get('password')
 
+            user = User.objects.get(email=email)
+
             login_success_data = utils.generate_oauth_token(self, email, password)
             if login_success_data.status_code != 200:
                 return Response(error_conf.INVALID_PASSWORD,
@@ -103,7 +106,8 @@ class LoginView(APIView):
                 responce_dict['is_email_verified'] = False
             else:
                 responce_dict['is_email_verified'] = True
-
-            return HttpResponse(json.dumps(responce_dict),
+            serilizer = UserDisplaySerializer(user)
+            return HttpResponse(json.dumps({'user_details': serilizer.data,
+                                 'token_details': responce_dict}),
                                 content_type='application/json')
         return HttpResponse(status=status.HTTP_412_PRECONDITION_FAILED)
