@@ -14,9 +14,12 @@ from user_auth import system_error
 from user_auth import utils
 from user_auth.models import User
 from user_auth.serializers import (
-    UserSerializer
+    UserSerializer,
+    UserDisplaySerializer
 )
-
+import requests
+from django.template import loader, Context
+from django.shortcuts import render_to_response
 
 
 class CreateUserView(CreateAPIView):
@@ -38,7 +41,6 @@ class CreateUserView(CreateAPIView):
         #     return Response(error_checks,
         #                     status=status.HTTP_412_PRECONDITION_FAILED)
 
-        import pdb;pdb.set_trace()
         user_data['role'] = "User"
         serializer = UserSerializer(data=user_data)
         if serializer.is_valid():
@@ -97,6 +99,8 @@ class LoginView(APIView):
             email = data.get('email')
             password = data.get('password')
 
+            user = User.objects.get(email=email)
+
             login_success_data = utils.generate_oauth_token(self, email, password)
             if login_success_data.status_code != 200:
                 return Response(error_conf.INVALID_PASSWORD,
@@ -104,12 +108,11 @@ class LoginView(APIView):
 
             responce_dict = json.loads(login_success_data._content)
 
-            if (error_checks and error_checks.get('error_code') == 7):
-                responce_dict['is_email_verified'] = False
-            else:
-                responce_dict['is_email_verified'] = True
+            responce_dict['is_email_verified'] = True
 
-            return HttpResponse(json.dumps(responce_dict),
+            serilizer = UserDisplaySerializer(user)
+            return HttpResponse(json.dumps({'user_details': serilizer.data,
+                                 'token_details': responce_dict}),
                                 content_type='application/json')
         return HttpResponse(status=status.HTTP_412_PRECONDITION_FAILED)
 
@@ -118,18 +121,19 @@ class LoginPageView(TemplateView):
     template_name = "login.html"
 
 
-import requests
-from django.template import loader, Context
-
 def login(request):
     data = request.POST.dict()
-    import pdb;pdb.set_trace()
     headers = {
         'content-type': 'application/json'
     }
-    requests.post("http://localhost:8000/api/login/", data=data, headers=headers)
-    template = loader.get_template('templates/login.html')
-    context = {
-        'latest_question_list': 'latest_question_list',
-    }
-    return HttpResponse(template.render(context, request))
+    login_status = requests.post("http://" + request.get_host() + "/api/user/login/",
+        data=json.dumps(data),
+        headers=headers)
+
+    if login_status.status_code == 200:
+
+        return render_to_response('index.html', {
+            'foo': 'bar',
+            })
+
+    return render_to_response('loginfailure.html')

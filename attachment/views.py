@@ -1,24 +1,24 @@
-import os
 import json
+import os
 
-from rest_framework.views import APIView
-
-from attachment.models import AssetsManagement
-from attachment.serializers import AssetsManagementSerializer
-from attachment.custom_permission import IsEmailVerified
 from django.core.files.base import ContentFile
-from oauth2_provider.ext.rest_framework import OAuth2Authentication
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from assignment.settings import BASE_DIR
+from attachment.models import AssetsManagement
+from attachment.serializers import AssetsManagementSerializer
 
 
 class AssetsManagementCreateViewMultipart(CreateAPIView):
     serializer_class = AssetsManagementSerializer
     authentication_classes = [OAuth2Authentication]
-    permission_classes = [IsAuthenticated, IsEmailVerified]
+    permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser,)
 
     def post(self, request, format=None):
@@ -32,14 +32,14 @@ class AssetsManagementCreateViewMultipart(CreateAPIView):
         up_file = request.FILES.get('attachment')
 
         if up_file:
-            destination = open('/var/tmp/' + up_file.name, 'wb+')
+            destination = open(BASE_DIR + '/' +  up_file.name, 'wb+')
             for chunk in up_file.chunks():
                 destination.write(chunk)
             destination.close()
             try:
-                image_obj = open('/var/tmp/' + up_file.name).read()
+                image_obj = open(BASE_DIR + '/' + up_file.name).read()
                 file_content = ContentFile(image_obj,
-                                           '/var/tmp/' + user_asset_data['name'])
+                                           BASE_DIR + '/' + user_asset_data['name'])
             except:
                 return Response({"msg": "Attachment not uploaded successfully."},
                                 status=status.HTTP_412_PRECONDITION_FAILED)
@@ -51,10 +51,10 @@ class AssetsManagementCreateViewMultipart(CreateAPIView):
 
             if serializer.is_valid():
                 serializer.save()
-                os.remove('/var/tmp/' + up_file.name)
+                os.remove(BASE_DIR + '/' + up_file.name)
                 return Response(serializer.data,
                                 status=status.HTTP_201_CREATED)
-            os.remove('/var/tmp/' + up_file.name)
+            os.remove(BASE_DIR + '/' + up_file.name)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -67,14 +67,17 @@ class AttachmentListingView(APIView):
     List All the Attachments
     """
     authentication_classes = [OAuth2Authentication]
-    permission_classes = [IsAuthenticated, IsEmailVerified]
+    permission_classes = [IsAuthenticated]
     serializer_class = AssetsManagementSerializer
 
     def get(self, request, format=None):
         """
         This method is used to store user's ticket images.
         """
-        data = AssetsManagement.objects.all()
+        if request.user.role == 'Admin':
+            data = AssetsManagement.objects.all()
+        else:
+            data = AssetsManagement.objects.filter(created_by=request.user.id)
         response_dict = {}
         for record in data:
             if record['created_by'] in response_dict:
