@@ -1,5 +1,5 @@
-from attachments.models import AssetsManagement
-from audetemi.non_null_serializer import BaseSerializer
+from attachment.models import AssetsManagement
+from assignment.non_null_serializer import BaseSerializer
 
 
 class AssetsManagementSerializer(BaseSerializer):

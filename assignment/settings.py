@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user_auth',
+    'oauth2_provider',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +116,11 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+CLIENT_ID = 'Z6xeIWzxGeHcihFLgSIbr1Q3qW92jNTxDdTe80S0'
+
+CLIENT_SECRET = 'ce3NwDDFJOT8fzSY44yQ3ajOqrzdy9klgEXrwIFqamYWqQUqbyF3TCGwLrbpI11sPxf4aspUGitoplvMsLjdCca8s4zwlldEvwIM362qQK8fcuxQ8icRA9Hjh62Zz25m'
 
 
 # Static files (CSS, JavaScript, Images)

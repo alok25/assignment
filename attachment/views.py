@@ -1,7 +1,9 @@
 import os
+import json
 
 from rest_framework.views import APIView
 
+from attachment.models import AssetsManagement
 from attachment.serializers import AssetsManagementSerializer
 from attachment.custom_permission import IsEmailVerified
 from django.core.files.base import ContentFile
@@ -66,8 +68,17 @@ class AttachmentListingView(APIView):
     """
     authentication_classes = [OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsEmailVerified]
+    serializer_class = AssetsManagementSerializer
 
     def get(self, request, format=None):
         """
         This method is used to store user's ticket images.
         """
+        data = AssetsManagement.objects.all()
+        response_dict = {}
+        for record in data:
+            if record['created_by'] in response_dict:
+                response_dict['created_by']['id'] = [record]
+            else:
+                response_dict['created_by']['id'] = response_dict['created_by']['id'].append(record)
+        return Response(json.dumps(response_dict))
