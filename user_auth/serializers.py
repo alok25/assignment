@@ -22,7 +22,8 @@ class UserSerializer(BaseSerializer):
     def create(self, validated_data):
         user = User.objects.create(
             email=validated_data['email'],
-            full_name=validated_data.get('full_name', ''),
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
             role=validated_data['role'],
             is_active=True
         )

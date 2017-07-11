@@ -44,7 +44,6 @@ def opt_generator(user):
 def send_otp_to_mail(user_data, validated_otp_num, user):
     ## Sending Email to User
     subject = "Email - Verification"
-
     html_template = get_template('user_auth/registration_email.html')
     html_context = {}
     html_context['full_name'] = user_data.get('email')
@@ -54,15 +53,12 @@ def send_otp_to_mail(user_data, validated_otp_num, user):
     html_content = html_template.render(html_context)
 
     email_to = user.email
-    send_mail(subject, None, settings.EMAIL_HOST_USER, [
-        email_to, ], html_message=html_content, fail_silently=False)
-    ## Sending Email to User FInish
+    send_mail(subject, "registered", settings.EMAIL_HOST_USER, [email_to, ], html_message=html_content, fail_silently=False)
 
 
 def generate_oauth_token(self, username, password):
     client_id = settings.CLIENT_ID
     client_secret = settings.CLIENT_SECRET
-
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     payload = {'grant_type': 'password',
                'username': username,
