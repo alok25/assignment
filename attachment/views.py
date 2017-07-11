@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from attachment.custom_permission import IsEmailVerified
+from assignment.settings import BASE_DIR
 from attachment.models import AssetsManagement
 from attachment.serializers import AssetsManagementSerializer
 
@@ -18,7 +18,7 @@ from attachment.serializers import AssetsManagementSerializer
 class AssetsManagementCreateViewMultipart(CreateAPIView):
     serializer_class = AssetsManagementSerializer
     authentication_classes = [OAuth2Authentication]
-    permission_classes = [IsAuthenticated, IsEmailVerified]
+    permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser,)
 
     def post(self, request, format=None):
@@ -32,14 +32,14 @@ class AssetsManagementCreateViewMultipart(CreateAPIView):
         up_file = request.FILES.get('attachment')
 
         if up_file:
-            destination = open('/var/tmp/' + up_file.name, 'wb+')
+            destination = open(BASE_DIR + '/' +  up_file.name, 'wb+')
             for chunk in up_file.chunks():
                 destination.write(chunk)
             destination.close()
             try:
-                image_obj = open('/var/tmp/' + up_file.name).read()
+                image_obj = open(BASE_DIR + '/' + up_file.name).read()
                 file_content = ContentFile(image_obj,
-                                           '/var/tmp/' + user_asset_data['name'])
+                                           BASE_DIR + '/' + user_asset_data['name'])
             except:
                 return Response({"msg": "Attachment not uploaded successfully."},
                                 status=status.HTTP_412_PRECONDITION_FAILED)
@@ -51,10 +51,10 @@ class AssetsManagementCreateViewMultipart(CreateAPIView):
 
             if serializer.is_valid():
                 serializer.save()
-                os.remove('/var/tmp/' + up_file.name)
+                os.remove(BASE_DIR + '/' + up_file.name)
                 return Response(serializer.data,
                                 status=status.HTTP_201_CREATED)
-            os.remove('/var/tmp/' + up_file.name)
+            os.remove(BASE_DIR + '/' + up_file.name)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
         else:
