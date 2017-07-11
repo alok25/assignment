@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api/', include('user_auth.urls', namespace='user_auth')),
+    url(r'^api/', include('attachment.urls', namespace='attachment')),
 ]

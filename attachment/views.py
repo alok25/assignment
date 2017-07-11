@@ -1,18 +1,18 @@
-import os
 import json
+import os
 
-from rest_framework.views import APIView
-
-from attachment.models import AssetsManagement
-from attachment.serializers import AssetsManagementSerializer
-from attachment.custom_permission import IsEmailVerified
 from django.core.files.base import ContentFile
-from oauth2_provider.ext.rest_framework import OAuth2Authentication
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from attachment.custom_permission import IsEmailVerified
+from attachment.models import AssetsManagement
+from attachment.serializers import AssetsManagementSerializer
 
 
 class AssetsManagementCreateViewMultipart(CreateAPIView):
@@ -67,14 +67,17 @@ class AttachmentListingView(APIView):
     List All the Attachments
     """
     authentication_classes = [OAuth2Authentication]
-    permission_classes = [IsAuthenticated, IsEmailVerified]
+    permission_classes = [IsAuthenticated]
     serializer_class = AssetsManagementSerializer
 
     def get(self, request, format=None):
         """
         This method is used to store user's ticket images.
         """
-        data = AssetsManagement.objects.all()
+        if request.user.role == 'Admin':
+            data = AssetsManagement.objects.all()
+        else:
+            data = AssetsManagement.objects.filter(created_by=request.user.id)
         response_dict = {}
         for record in data:
             if record['created_by'] in response_dict:
