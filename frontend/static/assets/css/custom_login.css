@@ -1,0 +1,18 @@
+/*Custom  css for login page written by team Cuelogic*/
+
+login-strong {
+    font-weight: 400;
+}
+
+.login-alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.login-alert {
+    padding: 2px;
+    margin-bottom: -9px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}

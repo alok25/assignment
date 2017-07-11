@@ -1,0 +1,1 @@
+angular.module('auth.services',['authenticate.service']);

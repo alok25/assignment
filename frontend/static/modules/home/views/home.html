@@ -1,0 +1,25 @@
+<!-- Right Section -->
+<div class="col-md-10 incident-right">
+    <h2>WELCOME <span>{{personal_info.full_name}}</span></h2>
+    <div class="filterPan home-filterPan">
+        <h3>Updated </h3>
+        <div class="clearfix"></div>
+    </div>
+    <!-- Mid Panel Start -->
+    <div class="col-md-12 full-block-panel-no-top-bottom">
+        <div ng-include="'/static/modules/agent-home/views/incident.html'"></div>
+    </div>
+    <div class="col-md-6  left-block-panel-no-top"
+         ng-include="'/static/modules/agent-home/views/my-product.html'"></div>
+
+    <div class="col-md-6  right-block-panel-no-top">
+        <div class="round-pan graphHeight">
+            <h3>Performance Rating</h3>
+            <div google-chart chart="chartObject" style="{{cssStyle}}"  custom-select="handleSelect"></div>
+            <!--<img src="/static/assets/images/graph.png" class="img-responsive pBot15">-->
+        </div>
+    </div>
+    <!--<div google-chart id="chartdiv" style="height:200px; width=100px"></div>-->
+    <!-- /Mid Panel Start -->
+</div>
+<!-- /Right Section -->

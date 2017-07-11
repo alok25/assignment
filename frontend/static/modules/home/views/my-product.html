@@ -1,0 +1,26 @@
+<div class="round-pan">
+    <h3>My Products </h3>
+
+    <div class="scrollHeight">
+        <ul>
+            <li ng-repeat="my_ticket in agents_my_products_tickets" class="mouser-pointer">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="imgPic">
+                            <img ng-if="my_ticket.attachments.length > 0 && my_ticket.attachments[0].asset_type == 1"
+                                 ng-src="{{my_ticket.attachments[0].attachment}}">
+                            <img ng-if="my_ticket.attachments.length < 1 || my_ticket.attachments[0].asset_type != 1"
+                                 src="/static/assets/images/pic-01.jpg">
+                        </div>
+                    </div>
+                    <div class="col-md-8 noPad">
+                        <h4>{{ my_ticket.product[0].name }}</h4>
+
+                        <p>{{ my_ticket.description | limitTo: 70}}{{my_ticket.description.length > 70 ? '...' :
+                            ''}}</p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

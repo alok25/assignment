@@ -1,6 +1,9 @@
 import json
 
 from django.http import HttpResponse
+from django.shortcuts import render
+from django.views.generic import TemplateView
+
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
@@ -13,6 +16,7 @@ from user_auth.models import User
 from user_auth.serializers import (
     UserSerializer
 )
+
 
 
 class CreateUserView(CreateAPIView):
@@ -114,3 +118,7 @@ class LoginView(APIView):
             return HttpResponse(json.dumps(responce_dict),
                                 content_type='application/json')
         return HttpResponse(status=status.HTTP_412_PRECONDITION_FAILED)
+
+
+class LoginPageView(TemplateView):
+    template_name = "login.html"
