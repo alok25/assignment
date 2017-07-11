@@ -127,4 +127,10 @@ CLIENT_SECRET = 'ce3NwDDFJOT8fzSY44yQ3ajOqrzdy9klgEXrwIFqamYWqQUqbyF3TCGwLrbpI11
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Add these new lines
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
