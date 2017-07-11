@@ -122,6 +122,17 @@ CLIENT_ID = 'Z6xeIWzxGeHcihFLgSIbr1Q3qW92jNTxDdTe80S0'
 
 CLIENT_SECRET = 'ce3NwDDFJOT8fzSY44yQ3ajOqrzdy9klgEXrwIFqamYWqQUqbyF3TCGwLrbpI11sPxf4aspUGitoplvMsLjdCca8s4zwlldEvwIM362qQK8fcuxQ8icRA9Hjh62Zz25m'
 
+SERVER_PROTOCOLS = 'http://'
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_HOST_USER = 'audetemidemo@gmail.com'
+
+EMAIL_HOST_PASSWORD = 'audetemi@demo'
+
+EMAIL_PORT = 587
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

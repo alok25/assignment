@@ -1,10 +1,8 @@
 from validate_email import validate_email
 
-from audetemi import error_conf
+from assignment import error_conf
 from user_auth import utils
 from user_auth.models import User
-from user_details.models import UserSocialDetails
-from audetemi import helper
 
 
 def check_for_login_input_error(data):
@@ -18,9 +16,6 @@ def check_for_login_input_error(data):
     elif not data.get('password'):
         return error_conf.PASSWORD_NOT_PROVIDED
 
-    elif not data.get('source'):
-        return error_conf.SOURCE_NOT_PROVIDED
-
     if data.get('email'):
         email_valid = validate_email(data.get('email'))
         if not email_valid:
@@ -28,41 +23,6 @@ def check_for_login_input_error(data):
 
     if len(User.objects.filter(email=data.get('email'))) == 0:
         return error_conf.USER_DOES_NOT_EXIST
-
-    if User.objects.filter(email=data.get('email')):
-        user = User.objects.filter(email=data.get('email'))[0]
-
-        if not user.is_email_verified:
-            """
-            This generates the OTP for the registered email
-            and send the OTP to the users email.
-            """
-            user_data = {}
-            user_data['full_name'] = user.full_name
-            user_data['email'] = user.email
-            validated_otp_num = utils.opt_generator(user)
-
-            utils.send_opt_to_mail(user_data, validated_otp_num, user)
-
-            return error_conf.EMAIL_NOT_VERIFIED
-        elif not user.is_active:
-            return error_conf.USER_IS_INACTIVE
-        elif not user.is_superuser:
-            audetemi_login = check_audetemi_created_user(user)
-            if not audetemi_login:
-                return error_conf.USER_CREATED_THROUGH_SOCIAL_LOGIN
-    return False
-
-
-def check_existed_user(email):
-    user = User.objects.filter(email=email)
-    if user:
-        socialdetails = UserSocialDetails.objects.filter(user=user[0])
-        if socialdetails:
-            if socialdetails[0].provider == "Audetemi":
-                return error_conf.USER_ALREADY_EXISTS_AUDETEMI
-            else:
-                return error_conf.USER_ALREADY_EXISTS_SOCIAL
     return False
 
 
@@ -80,16 +40,10 @@ def check_for_registration_input_error(data):
     elif not data.get('confirm_password'):
         return error_conf.CONFIRM_PASSWORD_NOT_PROVIDED
 
-    elif not data.get('source'):
-        return error_conf.SOURCE_NOT_PROVIDED
-
     if data.get('email'):
         email_valid = validate_email(data.get('email'))
         if not email_valid:
             return error_conf.INVALID_EMAIL
-
-    if data.get('source') != "USER_APP":
-        return error_conf.INVALID_SOURCE_PROVIDED
 
     if data.get('password'):
         if len(data.get('password')) < 8:
@@ -97,10 +51,6 @@ def check_for_registration_input_error(data):
 
     if (data.get('password') != data.get('confirm_password')):
         return error_conf.PASSWORDS_DOES_NOT_MATCH
-
-    existed_user = check_existed_user(data.get('email'))
-    if existed_user != False:
-        return existed_user
 
     return False
 
@@ -185,7 +135,7 @@ def check_for_social_registration_input_error(data):
     elif not user_data.get('email'):
         return error_conf.EMAIL_NOT_PROVIDED
 
-    elif not user_data.get('full_name'):
+    elif not user_data.get('first_name'):
         return error_conf.FULLNAME_NOT_PROVIDED
 
     elif not data.get('source'):

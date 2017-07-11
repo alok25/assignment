@@ -6,8 +6,8 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from user_auth import system_error
 from assignment import error_conf
+from user_auth import system_error
 from user_auth import utils
 from user_auth.models import User
 from user_auth.serializers import (
@@ -36,7 +36,6 @@ class CreateUserView(CreateAPIView):
 
         user_data['role'] = "User"
         serializer = UserSerializer(data=user_data)
-
         if serializer.is_valid():
             user = serializer.save()
 
@@ -84,7 +83,6 @@ class LoginView(APIView):
 
         if request.data:
             data = request.data
-
             error_checks = system_error.check_for_login_input_error(data)
 
             if (error_checks and error_checks.get('error_code') != 7):
@@ -94,12 +92,7 @@ class LoginView(APIView):
             email = data.get('email')
             password = data.get('password')
 
-            user = User.objects.get(email=email)
-            username = user.username
-
-
-
-            login_success_data = utils.generate_oauth_token(self, username, password)
+            login_success_data = utils.generate_oauth_token(self, email, password)
             if login_success_data.status_code != 200:
                 return Response(error_conf.INVALID_PASSWORD,
                                 status=status.HTTP_412_PRECONDITION_FAILED)
